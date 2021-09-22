@@ -9,4 +9,21 @@
         where id in
         (select tag_id from ms_article_tag where article_id=#{articleId})
     </select>
+
+
+<!--    List<Long> findTagsHos(int limit);-->
+    <select id="findTagsHos" parameterType="int" resultType="java.lang.Long">
+        select tag_id from ms_article_tag at group by tag_id order by count(1) desc limit #{size}
+    </select>
+
+<!--    List<Tag> findTagNameByTagId(List<Long> listTagsHot);-->
+    <select id="findTagNameByTagId" parameterType="list" resultType="com.mszlu.blog.dao.pojo.Tag">
+        select id,tag_name as tagName from ms_tag
+        where id in
+        <foreach collection="listTagsHot" item="tagId" separator="," open="(" close=")">
+            #{tagId}
+        </foreach>
+    </select>
+
+
 </mapper>

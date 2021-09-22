@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
+/**
+ * 返回结果统一处理
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +28,7 @@ public class Result {
     public static Result success(Object data) {
         return new Result(true,200,"success",data);
     }
+
     public static Result fail(Integer code, String msg) {
         return new Result(false,code,msg,null);
     }

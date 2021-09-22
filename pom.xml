@@ -60,8 +60,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.0</version>
             </plugin>
         </plugins>
+<!--        扫描配置文件，否则有可能加载不到xml等-->
         <resources>
             <resource>
                 <directory>src/main/java</directory>

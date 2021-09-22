@@ -17,7 +17,7 @@ import java.util.List;
 public class ArticleVo {
     private Long id;
 
-    private String tile;
+    private String title;
 
     private String summary;
 

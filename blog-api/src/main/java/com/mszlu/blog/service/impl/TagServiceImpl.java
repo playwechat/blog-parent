@@ -3,12 +3,15 @@ package com.mszlu.blog.service.impl;
 import com.mszlu.blog.dao.mapper.TagMapper;
 import com.mszlu.blog.dao.pojo.Tag;
 import com.mszlu.blog.service.TagService;
+import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.TagVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,11 +28,22 @@ public class TagServiceImpl implements TagService {
     private TagMapper tagMapper;
 
 
+    /**
+     * 复制单个标签数据
+     * @param tag
+     * @return
+     */
     public TagVo copy(Tag tag){
         TagVo tagVo = new TagVo();
         BeanUtils.copyProperties(tag,tagVo);
         return tagVo;
     }
+
+    /**
+     * 复制所有标签集合信息
+     * @param tagList
+     * @return
+     */
     public List<TagVo> copyList(List<Tag> tagList){
         List<TagVo> tagVoList = new ArrayList<>();
         for (Tag tag : tagList) {
@@ -44,4 +58,23 @@ public class TagServiceImpl implements TagService {
         List<Tag> tags = tagMapper.findTagsByArticleId(articleId);
         return copyList(tags);
     }
+
+    /**
+     * 查找最热标签方法
+     * @param limit
+     * @return
+     */
+    @Override
+    public List<TagVo> hot(int limit) {
+        List<Long> hotsTagIds = tagMapper.findTagsHos(limit);
+        if (CollectionUtils.isEmpty(hotsTagIds)){
+            return Collections.emptyList();
+        }
+        List<Tag> tagList = tagMapper.findTagNameByTagId(hotsTagIds);
+        return copyList(tagList);
+    }
+
 }
+
+
+

@@ -16,5 +16,18 @@ import java.util.List;
 
 
 public interface ArticleService {
+
+    /**
+     * 文章列表展示
+     * @param pageParams
+     * @return
+     */
     Result listArticlesPage(PageParams pageParams);
+
+    /**
+     * 最热文章
+     * @param limit  最多显示几个最热文章
+     * @return
+     */
+    Result hotArticles(int limit);
 }

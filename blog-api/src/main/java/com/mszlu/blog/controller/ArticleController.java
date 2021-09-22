@@ -1,8 +1,9 @@
 package com.mszlu.blog.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mszlu.blog.dao.mapper.ArticleMapper;
 import com.mszlu.blog.dao.pojo.Article;
 import com.mszlu.blog.service.ArticleService;
-import com.mszlu.blog.vo.ArticleVo;
 import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.params.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("articles")
 public class ArticleController {
 
+
     @Autowired
     private ArticleService articleService;
     /*
@@ -29,5 +31,11 @@ public class ArticleController {
     public Result listArticle(@RequestBody PageParams pageParams){
         return articleService.listArticlesPage(pageParams);
 
+    }
+
+    @PostMapping("hot")
+    public Result hotArticle(){
+        int limit = 5;
+        return articleService.hotArticles(limit);
     }
 }

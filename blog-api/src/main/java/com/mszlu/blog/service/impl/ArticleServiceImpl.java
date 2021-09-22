@@ -4,13 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mszlu.blog.dao.mapper.ArticleMapper;
 import com.mszlu.blog.dao.pojo.Article;
+import com.mszlu.blog.dao.pojo.SysUser;
 import com.mszlu.blog.service.ArticleService;
 import com.mszlu.blog.service.SysUserService;
 import com.mszlu.blog.service.TagService;
 import com.mszlu.blog.vo.ArticleVo;
 import com.mszlu.blog.vo.Result;
+import com.mszlu.blog.vo.TagVo;
 import com.mszlu.blog.vo.params.PageParams;
 import org.joda.time.DateTime;
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,32 +52,49 @@ public class ArticleServiceImpl implements ArticleService {
         List<Article> records = articlePage.getRecords();
 
         //不能直接返回
-        List<ArticleVo> articleVoList = copyList(records,true,true);
+        List<ArticleVo> articleVoList = copyList(records,true,true,true);
         return Result.success(articleVoList);
     }
 
-    private List<ArticleVo> copyList(List<Article> records,boolean isTag,boolean isAuthor) {
-        List<ArticleVo> articleVoList = new ArrayList<>();
-        for (Article record :records){
-            articleVoList.add(copy(record,isTag,isAuthor));
-        }
-        return  articleVoList;
+    @Override
+    public Result hotArticles(int limit) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(Article::getViewCounts);
+        queryWrapper.select(Article::getId,Article::getTitle);
+        queryWrapper.last("limit " + limit);
+        List<Article> articles = articleMapper.selectList(queryWrapper);
+        System.out.println(articles);
+        System.out.println(copyList(articles,false,false,false));
+        return Result.success(copyList(articles,false,false,false));
     }
 
-    private ArticleVo copy(Article article,boolean isTag,boolean isAuthor) {
+    public ArticleVo copy(Article article,boolean isAuthor,boolean isBody,boolean isTags){
         ArticleVo articleVo = new ArticleVo();
-        BeanUtils.copyProperties(article,articleVo);
-
-        articleVo.setCreateDate(new DateTime(article.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
-        //并不是所有的接口都需要标签、作者信息
-        if (isTag){
-            Long articleId = article.getId();
-            articleVo.setTags(tagService.findTagsByArticleId(articleId));
+        BeanUtils.copyProperties(article, articleVo);
+        if (isAuthor) {
+            SysUser sysUser = sysUserService.findUserByID(article.getAuthorId());
+            articleVo.setAuthor(sysUser.getNickname());
         }
-        if (isAuthor){
-            Long authorId = article.getAuthorId();
-            articleVo.setAuthor(sysUserService.findUserByID(authorId).getNickname() );
+        articleVo.setCreateDate(new DateTime(article.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
+        if (isTags){
+            List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
+            articleVo.setTags(tags);
         }
         return articleVo;
     }
+
+    private List<ArticleVo> copyList(List<Article> records,boolean isAuthor,boolean isBody,boolean isTags) {
+        List<ArticleVo> articleVoList = new ArrayList<>();
+        for (Article article : records) {
+            ArticleVo articleVo = copy(article,isAuthor,isBody,isTags);
+            articleVoList.add(articleVo);
+        }
+        return articleVoList;
+    }
+
+
+
+
+
+
 }
