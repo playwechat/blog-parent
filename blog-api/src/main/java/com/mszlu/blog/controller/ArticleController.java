@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mszlu.blog.dao.mapper.ArticleMapper;
 import com.mszlu.blog.dao.pojo.Article;
 import com.mszlu.blog.service.ArticleService;
+import com.mszlu.blog.vo.ArticleVo;
 import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.params.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.PublicKey;
 import java.util.List;
 
 /**
@@ -61,5 +63,20 @@ public class ArticleController {
     public Result listArchives(){
         return articleService.listArchives();
     }
+
+
+    /**
+     * 根据文章id获取文章详情，包括文章内容，标签，分类
+     * 涉及两个表，需要连表查询
+     * 用ArticleVo接收查询结果
+     * @param id
+     * @return
+     */
+    @PostMapping("/view/{id}")
+    public Result findDetailArticleById(@PathVariable("id") Long id){
+        ArticleVo articleVo = articleService.findDetailArticleById(id);
+        return Result.success(articleVo);
+    }
+
 
 }

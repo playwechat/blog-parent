@@ -15,9 +15,9 @@ public class Article {
 
     private String summary;//简介
 
-    private int commentCounts;//评论数量
+    private Integer commentCounts;//评论数量
 
-    private int viewCounts;//阅读总数
+    private Integer viewCounts;//阅读总数
 
     /**
      * 作者id
@@ -35,7 +35,7 @@ public class Article {
     /**
      * 置顶
      */
-    private int weight = Article_Common;
+    private Integer weight = Article_Common;
 
 
     /**

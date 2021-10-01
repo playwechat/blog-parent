@@ -3,15 +3,13 @@ package com.mszlu.blog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mszlu.blog.dao.dos.Archives;
+import com.mszlu.blog.dao.mapper.ArticleBodyMapper;
 import com.mszlu.blog.dao.mapper.ArticleMapper;
 import com.mszlu.blog.dao.pojo.Article;
+import com.mszlu.blog.dao.pojo.ArticleBody;
 import com.mszlu.blog.dao.pojo.SysUser;
-import com.mszlu.blog.service.ArticleService;
-import com.mszlu.blog.service.SysUserService;
-import com.mszlu.blog.service.TagService;
-import com.mszlu.blog.vo.ArticleVo;
-import com.mszlu.blog.vo.Result;
-import com.mszlu.blog.vo.TagVo;
+import com.mszlu.blog.service.*;
+import com.mszlu.blog.vo.*;
 import com.mszlu.blog.vo.params.PageParams;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +35,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Autowired
+    private ArticleBodyMapper articleBodyMapper;
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private ThreadService threadService;
 
 
     @Override
@@ -85,6 +92,14 @@ public class ArticleServiceImpl implements ArticleService {
        return Result.success(archivesList);
     }
 
+    @Override
+    public ArticleVo findDetailArticleById(Long id) {
+        Article article = articleMapper.selectById(id);
+        //开启线程池，执行阅读数增加操作，防止阻塞主线程显示文章详细信息的操作
+        threadService.updateViewCount(articleMapper,article);
+        return copy(article,true,true,true,true);
+    }
+
     public ArticleVo copy(Article article,boolean isAuthor,boolean isBody,boolean isTags){
         ArticleVo articleVo = new ArticleVo();
         BeanUtils.copyProperties(article, articleVo);
@@ -100,6 +115,39 @@ public class ArticleServiceImpl implements ArticleService {
         return articleVo;
     }
 
+    /**
+     * 重载
+     * @param article
+     * @param isAuthor
+     * @param isBody
+     * @param isTags
+     * @param isCategory
+     * @return
+     */
+    public ArticleVo copy(Article article,boolean isAuthor,boolean isBody,boolean isTags,boolean isCategory){
+        ArticleVo articleVo = new ArticleVo();
+        BeanUtils.copyProperties(article, articleVo);
+        if (isAuthor) {
+            SysUser sysUser = sysUserService.findUserByID(article.getAuthorId());
+            articleVo.setAuthor(sysUser.getNickname());
+        }
+        articleVo.setCreateDate(new DateTime(article.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
+        if (isTags){
+            List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
+            articleVo.setTags(tags);
+        }
+        if (isBody){
+            ArticleBodyVo articleBody = findArticleBody(article.getId());
+            articleVo.setBody(articleBody);
+        }
+        if (isCategory){
+            CategoryVo categoryVo = findCategory(article.getCategoryId());
+            articleVo.setCategory(categoryVo);
+        }
+        return articleVo;
+    }
+
+
     private List<ArticleVo> copyList(List<Article> records,boolean isAuthor,boolean isBody,boolean isTags) {
         List<ArticleVo> articleVoList = new ArrayList<>();
         for (Article article : records) {
@@ -108,6 +156,27 @@ public class ArticleServiceImpl implements ArticleService {
         }
         return articleVoList;
     }
+
+
+
+    private ArticleBodyVo findArticleBody(Long articleId) {
+        LambdaQueryWrapper<ArticleBody> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleBody::getArticleId,articleId);
+        ArticleBody articleBody = articleBodyMapper.selectOne(queryWrapper);
+        ArticleBodyVo articleBodyVo = new ArticleBodyVo();
+        articleBodyVo.setContent(articleBody.getContent());
+        return articleBodyVo;
+    }
+
+
+
+    private CategoryVo findCategory(Long categoryId) {
+        return categoryService.findCategoryById(categoryId);
+    }
+
+
+
+
 
 
 
