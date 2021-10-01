@@ -106,6 +106,21 @@
             <artifactId>joda-time</artifactId>
             <version>2.10.10</version>
         </dependency>
+
+<!--        jwt生成token-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+
+        <!--MD5码加密-->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+
     </dependencies>
 
 </project>

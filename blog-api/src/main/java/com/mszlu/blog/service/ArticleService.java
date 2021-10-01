@@ -30,4 +30,17 @@ public interface ArticleService {
      * @return
      */
     Result hotArticles(int limit);
+
+    /**
+     * 最新文章
+     * @param limit  显示条数
+     * @return
+     */
+    Result newArticles(int limit);
+
+    /**
+     * 文章归档
+     * @return
+     */
+    Result listArchives();
 }

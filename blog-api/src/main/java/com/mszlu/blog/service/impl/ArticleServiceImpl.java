@@ -2,6 +2,7 @@ package com.mszlu.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mszlu.blog.dao.dos.Archives;
 import com.mszlu.blog.dao.mapper.ArticleMapper;
 import com.mszlu.blog.dao.pojo.Article;
 import com.mszlu.blog.dao.pojo.SysUser;
@@ -13,7 +14,6 @@ import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.TagVo;
 import com.mszlu.blog.vo.params.PageParams;
 import org.joda.time.DateTime;
-import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,9 +63,26 @@ public class ArticleServiceImpl implements ArticleService {
         queryWrapper.select(Article::getId,Article::getTitle);
         queryWrapper.last("limit " + limit);
         List<Article> articles = articleMapper.selectList(queryWrapper);
-        System.out.println(articles);
         System.out.println(copyList(articles,false,false,false));
         return Result.success(copyList(articles,false,false,false));
+    }
+
+    @Override
+    public Result newArticles(int limit) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(Article::getCreateDate);
+        queryWrapper.select(Article::getId,Article::getTitle);
+        queryWrapper.last("limit " + limit);
+        //select id,title from article order by create_date desc limit 5
+        List<Article> articles = articleMapper.selectList(queryWrapper);
+        System.out.println(copyList(articles,false,false,false));
+        return Result.success(copyList(articles,false,false,false));
+    }
+
+    @Override
+    public Result listArchives() {
+       List<Archives> archivesList = articleMapper.listArchives();
+       return Result.success(archivesList);
     }
 
     public ArticleVo copy(Article article,boolean isAuthor,boolean isBody,boolean isTags){
