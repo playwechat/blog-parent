@@ -5,9 +5,14 @@ import com.mszlu.blog.dao.mapper.CategoryMapper;
 import com.mszlu.blog.dao.pojo.Category;
 import com.mszlu.blog.service.CategoryService;
 import com.mszlu.blog.vo.CategoryVo;
+import com.mszlu.blog.vo.Result;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -20,6 +25,26 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryMapper.selectById(categoryId);
         CategoryVo categoryVo = new CategoryVo();
         BeanUtils.copyProperties(category,categoryVo);//第一个参数是资源（被复制的），第二个参数是需要复制的目标
+        return categoryVo;
+    }
+
+    @Override
+    public Result findAll() {
+        List<Category> categories = this.categoryMapper.selectList(new LambdaQueryWrapper<>());
+        return Result.success(copyList(categories));
+    }
+
+    private List<CategoryVo> copyList(List<Category> categories) {
+        List<CategoryVo> list = new ArrayList<>();
+        for (Category category : categories){
+            list.add(copy(category));
+        }
+        return list;
+    }
+
+    private CategoryVo copy(Category category) {
+        CategoryVo categoryVo = new CategoryVo();
+        BeanUtils.copyProperties(category,categoryVo);
         return categoryVo;
     }
 }

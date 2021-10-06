@@ -2,6 +2,7 @@ package com.mszlu.blog.service;
 
 import com.mszlu.blog.dao.pojo.SysUser;
 import com.mszlu.blog.vo.Result;
+import com.mszlu.blog.vo.UserVo;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,4 +36,11 @@ public interface SysUserService {
      * @param sysUser
      */
     void save(SysUser sysUser);
+
+    /**
+     * 根据id获取用户信息
+     * @param authorId
+     * @return
+     */
+    UserVo findUserVoById(Long authorId);
 }

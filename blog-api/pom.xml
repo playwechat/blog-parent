@@ -120,6 +120,15 @@
             <artifactId>commons-codec</artifactId>
         </dependency>
 
+<!--        七牛云-->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <version>7.7.0</version>
+        </dependency>
+
+
+
 
     </dependencies>
 

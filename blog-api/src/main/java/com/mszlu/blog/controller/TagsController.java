@@ -1,5 +1,6 @@
 package com.mszlu.blog.controller;
 
+import com.mszlu.blog.dao.pojo.Tag;
 import com.mszlu.blog.service.TagService;
 import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.TagVo;
@@ -27,6 +28,11 @@ public class TagsController {
         int limit = 6;
         List<TagVo> tagVoList = tagService.hot(limit);
         return Result.success(tagVoList);
+    }
+
+    @GetMapping
+    public Result listAllTags(Tag tag){
+        return tagService.findAllTags(tag);
     }
 
 }

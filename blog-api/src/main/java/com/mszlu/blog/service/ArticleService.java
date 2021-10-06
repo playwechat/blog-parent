@@ -3,6 +3,7 @@ package com.mszlu.blog.service;
 import com.mszlu.blog.dao.pojo.Article;
 import com.mszlu.blog.vo.ArticleVo;
 import com.mszlu.blog.vo.Result;
+import com.mszlu.blog.vo.params.ArticleParam;
 import com.mszlu.blog.vo.params.PageParams;
 import org.springframework.stereotype.Service;
 
@@ -50,4 +51,11 @@ public interface ArticleService {
      * @return
      */
     ArticleVo findDetailArticleById(Long id);
+
+    /**
+     * 写文章
+     * @param articleParam
+     * @return
+     */
+    Result publish(ArticleParam articleParam);
 }
