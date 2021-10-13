@@ -1,6 +1,7 @@
 package com.mszlu.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mszlu.blog.dao.dos.Archives;
 import com.mszlu.blog.dao.mapper.ArticleBodyMapper;
@@ -53,13 +54,38 @@ public class ArticleServiceImpl implements ArticleService {
     private ArticleTagMapper articleTagMapper;
 
 
+
     @Override
     public Result listArticlesPage(PageParams pageParams) {
-        /*
-        分页查询article数据库表
-         */
-        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
+        Page<Article> page = new Page<>(pageParams.getPage(),pageParams.getPageSize());
+        IPage<Article> articleIPage = this.articleMapper.listArticle(page,pageParams.getCategoryId(),pageParams.getTagId(),pageParams.getYear(),pageParams.getMonth());
+        return Result.success(copyList(articleIPage.getRecords(),true,false,true));
+
+/*
+
+        //分页查询article数据库表
+         Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+
+        //分类文章列表
+        if (pageParams.getCategoryId() != null) {
+            queryWrapper.eq(Article::getCategoryId,pageParams.getCategoryId());
+        }
+
+        //标签文章列表
+        List<Long> articleIdList = new ArrayList<>();
+        if (pageParams.getTagId() != null){
+            LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            articleTagLambdaQueryWrapper.eq(ArticleTag::getTagId,pageParams.getTagId());
+            List<ArticleTag> articleTags = articleTagMapper.selectList(articleTagLambdaQueryWrapper);
+            for (ArticleTag articleTag : articleTags) {
+                articleIdList.add(articleTag.getArticleId());
+            }
+            if (articleIdList.size() > 0){
+                queryWrapper.in(Article::getId,articleIdList);
+            }
+        }
+
         //按置顶、创建时间进行排序查询
         queryWrapper.orderByDesc(Article::getWeight, Article::getCreateDate);
         Page<Article> articlePage = articleMapper.selectPage(page,queryWrapper);
@@ -68,6 +94,7 @@ public class ArticleServiceImpl implements ArticleService {
         //不能直接返回
         List<ArticleVo> articleVoList = copyList(records,true,true,true);
         return Result.success(articleVoList);
+*/
     }
 
     @Override
@@ -113,7 +140,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         Article article = new Article();
         article.setAuthorId(sysUser.getId());
-        article.setCategoryId(articleParam.getCategory().getId());
+        article.setCategoryId(Long.parseLong(articleParam.getCategory().getId()));
         article.setCreateDate(System.currentTimeMillis());
         article.setCommentCounts(0);
         article.setSummary(articleParam.getSummary());
@@ -129,7 +156,7 @@ public class ArticleServiceImpl implements ArticleService {
             for (TagVo tag : tags) {
                 ArticleTag articleTag = new ArticleTag();
                 articleTag.setArticleId(article.getId());
-                articleTag.setTagId(tag.getId());
+                articleTag.setTagId(Long.parseLong(tag.getId()));
                 this.articleTagMapper.insert(articleTag);
             }
         }
@@ -142,12 +169,13 @@ public class ArticleServiceImpl implements ArticleService {
         article.setBodyId(articleBody.getId());
         articleMapper.updateById(article);
         ArticleVo articleVo = new ArticleVo();
-        articleVo.setId(article.getId());
+        articleVo.setId(String.valueOf(article.getId()));
         return Result.success(articleVo);
     }
 
     public ArticleVo copy(Article article,boolean isAuthor,boolean isBody,boolean isTags){
         ArticleVo articleVo = new ArticleVo();
+        articleVo.setId(String.valueOf(article.getId()));
         BeanUtils.copyProperties(article, articleVo);
         if (isAuthor) {
             SysUser sysUser = sysUserService.findUserByID(article.getAuthorId());
@@ -172,6 +200,7 @@ public class ArticleServiceImpl implements ArticleService {
      */
     public ArticleVo copy(Article article,boolean isAuthor,boolean isBody,boolean isTags,boolean isCategory){
         ArticleVo articleVo = new ArticleVo();
+        articleVo.setId(String.valueOf(article.getId()));
         BeanUtils.copyProperties(article, articleVo);
         if (isAuthor) {
             SysUser sysUser = sysUserService.findUserByID(article.getAuthorId());

@@ -37,6 +37,7 @@ public class TagServiceImpl implements TagService {
     public TagVo copy(Tag tag){
         TagVo tagVo = new TagVo();
         BeanUtils.copyProperties(tag,tagVo);
+        tagVo.setId(String.valueOf(tag.getId()));
         return tagVo;
     }
 
@@ -79,6 +80,20 @@ public class TagServiceImpl implements TagService {
     public Result findAllTags(Tag tag) {
         List<Tag> tagList = tagMapper.selectList(new LambdaQueryWrapper<>());
         return Result.success(copyList(tagList));
+    }
+
+    @Override
+    public Result findAllDetail() {
+        LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
+        List<Tag> tags = this.tagMapper.selectList(queryWrapper);
+        return Result.success(copyList(tags));
+    }
+
+    @Override
+    public Result findDetailById(Long id) {
+        Tag tag = tagMapper.selectById(id);
+        TagVo copy = copy(tag);
+        return Result.success(copy);
     }
 
 }

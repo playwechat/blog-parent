@@ -24,6 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryVo findCategoryById(Long categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         CategoryVo categoryVo = new CategoryVo();
+        categoryVo.setId(String.valueOf(category.getId()));
         BeanUtils.copyProperties(category,categoryVo);//第一个参数是资源（被复制的），第二个参数是需要复制的目标
         return categoryVo;
     }
@@ -32,6 +33,20 @@ public class CategoryServiceImpl implements CategoryService {
     public Result findAll() {
         List<Category> categories = this.categoryMapper.selectList(new LambdaQueryWrapper<>());
         return Result.success(copyList(categories));
+    }
+
+    @Override
+    public Result findAllDetail() {
+        List<Category> categories = categoryMapper.selectList(new LambdaQueryWrapper<>());
+        //页面交互的对象
+        return Result.success(copyList(categories));
+    }
+
+    @Override
+    public Result categoriesDetailById(Long id) {
+        Category category = categoryMapper.selectById(id);
+        CategoryVo categoryVo = copy(category);
+        return Result.success(categoryVo);
     }
 
     private List<CategoryVo> copyList(List<Category> categories) {
@@ -44,6 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryVo copy(Category category) {
         CategoryVo categoryVo = new CategoryVo();
+        categoryVo.setId(String.valueOf(category.getId()));
         BeanUtils.copyProperties(category,categoryVo);
         return categoryVo;
     }

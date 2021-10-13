@@ -62,7 +62,7 @@ public class SysUserServiceImpl implements SysUserService {
         }
         LoginUserVo loginUserVo = new LoginUserVo();
         //设置文档需要的返回数据
-        loginUserVo.setId(sysUser.getId());
+        loginUserVo.setId(String.valueOf(sysUser.getId()));
         loginUserVo.setAccount(sysUser.getAccount());
         loginUserVo.setNickname(sysUser.getNickname());
         loginUserVo.setAvatar(sysUser.getAvatar());
@@ -95,7 +95,7 @@ public class SysUserServiceImpl implements SysUserService {
         UserVo userVo = new UserVo();
         userVo.setAvatar(sysUser.getAvatar());
         userVo.setNickname(sysUser.getNickname());
-        userVo.setId(sysUser.getId());
+        userVo.setId(String.valueOf(sysUser.getId()));
         return userVo;
     }
 }
