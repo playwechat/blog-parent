@@ -1,0 +1,23 @@
+version: '3'
+services:
+  nginx:   #服务名称
+    image: nginx   # 镜像
+    container_name: cnginx
+    ports:         # 暴露的端口
+      - 80:80
+      - 443:443
+    links:
+      - app
+    depends_on:
+      - app
+    volumes:           #挂载
+      - /mnt/docker/docker-compose/nginx/:/etc/nginx/        #前面的是挂载到root机，后面是我们docke安装的位置
+      - /mnt/mszlu/web:/mszlu/web
+      - /mnt/mszlu/blog:/mszlu/blog
+    network_mode: "bridge"
+  app:
+    image: app
+    container_name: app
+    expose:
+      - "8888"
+    network_mode: "bridge"

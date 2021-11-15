@@ -7,15 +7,17 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
+@Slf4j
 public class QiniuUtils {
 
-    public static  final String url = "http://r0ci4cwkz.hn-bkt.clouddn.com/";
+    public static  final String url = "http://www.playwechat.club/";
 
     @Value("${qiniu.accessKey}")
     private  String accessKey ;
@@ -38,6 +40,7 @@ public class QiniuUtils {
                 Response response = uploadManager.put(uploadBytes, fileName, upToken);
                 //解析上传成功的结果
                 DefaultPutRet putRet = JSON.parseObject(response.bodyString(), DefaultPutRet.class);
+                log.info("图片上传成功");
                 return true;
             } catch (Exception ex) {
                 ex.printStackTrace();

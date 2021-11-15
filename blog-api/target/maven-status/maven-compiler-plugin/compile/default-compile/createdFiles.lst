@@ -23,6 +23,7 @@ com\mszlu\blog\vo\params\PageParams.class
 com\mszlu\blog\utils\QiniuUtils.class
 com\mszlu\blog\dao\mapper\ArticleTagMapper.class
 com\mszlu\blog\service\SysUserService.class
+com\mszlu\blog\common\cache\CacheAspect.class
 com\mszlu\blog\dao\pojo\ArticleTag.class
 com\mszlu\blog\utils\HttpContextUtil.class
 com\mszlu\blog\vo\params\RegisterParam.class
@@ -34,6 +35,7 @@ com\mszlu\blog\dao\pojo\SysUser.class
 com\mszlu\blog\dao\mapper\CommentMapper.class
 com\mszlu\blog\service\CategoryService.class
 com\mszlu\blog\vo\ArticleBodyVo.class
+com\mszlu\blog\common\cache\Cache.class
 com\mszlu\blog\dao\pojo\Comment.class
 com\mszlu\blog\dao\pojo\Category.class
 com\mszlu\blog\controller\TestController.class

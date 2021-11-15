@@ -14,12 +14,24 @@ public class WebConfig  implements WebMvcConfigurer {
     private LoginInterceptor loginInterceptor;
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        //跨域配置，不可设置为*，不安全, 前后端分离项目，可能域名不一致
-        //本地测试 端口不一致 也算跨域
-        registry.addMapping("/**").allowedOrigins("http://localhost:8080")
-                .allowedOrigins("http://114.132.40.59/8080");
+    public void addCorsMappings(CorsRegistry registry){
+        /**
+         * 跨域配置
+         */
+        //允许设置的端口跨域访问这里的资源
+        registry.addMapping("/**")
+                // 设置允许跨域请求的域名
+                .allowedOriginPatterns("*")    // 注意此处
+                // 是否允许证书（cookies）
+                .allowCredentials(true)
+                // 设置允许的方法
+                .allowedMethods("*")
+                // 跨域允许时间
+                .maxAge(3600);
+
+
     }
+
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
